@@ -1,0 +1,86 @@
+---
+- name: Create and configure local RPM repository for Nortk
+  hosts: repo_server
+  vars:
+    repo_base: "/usr/share/nginx/html/repos"
+    full_repo_path: "/usr/share/nginx/html/repos/nortk"
+    repo_name: "Nortk Base Repository"
+    short_repo_name: "base"
+    repo_url: "repos.nortk.com"
+
+  tasks:
+    - name: Install required tools (dnf, createrepo_c, nginx)
+      ansible.builtin.dnf:
+        name:
+          - createrepo_c
+          - nginx
+          - libselinux-python3
+        state: present
+
+    - name: Create repository directory structure
+      ansible.builtin.file:
+        path: "{{ full_repo_path }}"
+        state: directory
+        mode: '0755'
+        owner: nginx
+        group: nginx
+
+    - name: Initialize the repository with createrepo_c
+      ansible.builtin.command:
+        cmd: "createrepo_c {{ full_repo_path }}"
+        creates: "{{ full_repo_path }}/repodata"
+
+    - name: Configure Nginx to serve the repository
+      ansible.builtin.copy:
+        dest: "/etc/nginx/conf.d/nortk_{{ short_repo_name }}.conf"
+        content: |
+          server {
+              listen 80;
+              server_name _;
+              root {{ repo_base }};
+              location / {
+                  autoindex on;
+              }
+          }
+        mode: '0644'
+      notify: Restart nginx
+
+    - name: Configure Firewalld to allow HTTP traffic
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+
+    - name: Set SELinux contexts for the web directory
+      community.general.sefcontext:
+        target: "{{ repo_base }}(/.*)?"
+        setype: httpd_sys_content_t
+        state: present
+
+    - name: Apply new SELinux contexts (restorecon)
+      ansible.builtin.command:
+        cmd: "restorecon -Rv {{ repo_base }}"
+
+    - name: Enable and start Nginx service
+      ansible.builtin.systemd:
+        name: nginx
+        enabled: true
+        state: started
+
+    - name: Generate .repo configuration file for clients
+      ansible.builtin.copy:
+        dest: "/etc/yum.repos.d/nortk_{{ short_repo_name }}.repo"
+        content: |
+          [nortk_local]
+          name={{ repo_name }}
+          baseurl=http://{{ repo_url }}/nortk/
+          enabled=1
+          gpgcheck=0
+        mode: '0644'
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
