@@ -1,12 +1,7 @@
 ---
 - name: Create and configure local RPM repository for Nortk
-  hosts: repo_server
-  vars:
-    repo_base: "/usr/share/nginx/html/repos"
-    full_repo_path: "/usr/share/nginx/html/repos/nortk"
-    repo_name: "Nortk Base Repository"
-    short_repo_name: "base"
-    repo_url: "repos.nortk.com"
+  hosts: all
+  vars_files: vars/main.yaml
 
   tasks:
     - name: Install required tools (dnf, createrepo_c, nginx)
