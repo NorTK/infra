@@ -1,0 +1,8 @@
+---
+
+repo_base: "/usr/share/nginx/html/repos"
+full_repo_path: "/usr/share/nginx/html/repos/base"
+repo_name: "Nortk Base Repository"
+short_repo_name: "base"
+repo_url: "repos.nortk.com"
+
