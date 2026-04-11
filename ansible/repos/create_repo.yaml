@@ -31,7 +31,7 @@
         content: |
           server {
               listen 80;
-              server_name _;
+              server_name {{ repo_fqdn }};
               root {{ repo_base }};
               location / {
                   autoindex on;
@@ -69,7 +69,7 @@
         content: |
           [nortk_local]
           name={{ repo_name }}
-          baseurl=http://{{ repo_url }}/nortk/
+          baseurl=http://{{ repo_fqdn }}/nortk/
           enabled=1
           gpgcheck=0
         mode: '0644'
