@@ -64,19 +64,14 @@
         enabled: true
         state: started
 
-    - name: Generate .repo configuration file for clients
-      ansible.builtin.copy:
-        dest: "/etc/yum.repos.d/nortk_{{ short_repo_name }}.repo"
-        content: |
-          [nortk_local]
-          name={{ repo_name }}
-          baseurl=http://{{ repo_fqdn }}/nortk/
-          enabled=1
-          gpgcheck=0
-        mode: '0644'
-
     - name: Create the Nortk ERP release package
       ansible.builtin.include_tasks: create_repo_rpm.yaml
+
+    - name: Deploy the update_repos.sh script
+      ansible.builtin.template:
+        src: files/update_repos.sh
+        dest: "{{ repo_base }}"
+        mode: '0755'
 
   handlers:
     - name: Restart nginx
