@@ -13,7 +13,7 @@ mkdir -p %{buildroot}/etc/yum.repos.d
 cat <<EOR > %{buildroot}/etc/yum.repos.d/nortk_erp.repo
 [nortk_erp]
 name=Nortk ERP Repository
-baseurl=http://{{ repo_fqdn }}/nortk-erp/
+baseurl=http://{{ repo_fqdn }}/erp/
 enabled=1
 gpgcheck=0
 EOR
