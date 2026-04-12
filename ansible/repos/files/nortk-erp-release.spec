@@ -22,5 +22,5 @@ EOR
 /etc/yum.repos.d/nortk_erp.repo
 
 %changelog
-* Tue Apr 09 2024 Admin - 1.0-1
+* Tue Apr 09 2024 Iván Chavero <imcsk8@nortk.com> - 1.0-1
 - Initial repository package creation
