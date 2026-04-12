@@ -4,12 +4,13 @@
   vars_files: vars/main.yaml
 
   tasks:
-    - name: Install required tools (dnf, createrepo_c, nginx)
+    - name: Install required tools (dnf, createrepo_c, nginx, rpm-build)
       ansible.builtin.dnf:
         name:
           - createrepo_c
           - nginx
           - libselinux-python3
+          - rpm-build
         state: present
 
     - name: Create repository directory structure
@@ -73,6 +74,9 @@
           enabled=1
           gpgcheck=0
         mode: '0644'
+
+    - name: Create the Nortk ERP release package
+      ansible.builtin.include_tasks: create_repo_rpm.yaml
 
   handlers:
     - name: Restart nginx

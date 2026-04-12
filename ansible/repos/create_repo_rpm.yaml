@@ -1,0 +1,28 @@
+---
+- name: Ensure rpmbuild directory structure exists
+  ansible.builtin.file:
+    path: "~/rpmbuild/{{ item }}"
+    state: directory
+  loop: [SPECS, RPMS, SOURCES, BUILD, SRPMS]
+
+- name: Deploy the nortk-erp-release spec file
+  ansible.builtin.template:
+    src: files/nortk-erp-release.spec
+    dest: ~/rpmbuild/SPECS/nortk-erp-release.spec
+    mode: '0644'
+
+- name: Build the nortk-erp repository RPM package
+  ansible.builtin.command:
+    cmd: "rpmbuild -bb ~/rpmbuild/SPECS/nortk-erp-release.spec"
+    creates: "~/rpmbuild/RPMS/noarch/nortk-erp-release-1.0-1.noarch.rpm"
+
+- name: Copy the built RPM to the repository
+  ansible.builtin.copy:
+    src: "~/rpmbuild/RPMS/noarch/nortk-erp-release-1.0-1.noarch.rpm"
+    dest: "{{ full_repo_path }}/"
+    remote_src: yes
+    mode: '0644'
+
+- name: Update repository metadata
+  ansible.builtin.command:
+    cmd: "createrepo_c --update {{ full_repo_path }}"
