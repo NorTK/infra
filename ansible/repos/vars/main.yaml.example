@@ -1,8 +1,16 @@
 ---
 
 repo_base: "/usr/share/nginx/html/repos"
-full_repo_path: "/usr/share/nginx/html/repos/base"
-repo_name: "Nortk Base Repository"
-short_repo_name: "base"
+repo_name:
+  - "Nortk OS Repository"
+  - "Nortk ERP Repository"
+short_repo_name:
+  - "os"
+  - "erp"
+repo_version:
+  - "0.1"
+  - "0.1"
 repo_fqdn: "repos.nortk.com"
 
+# The full_repo_path is now derived from repo_base and short_repo_name
+# in the tasks.
