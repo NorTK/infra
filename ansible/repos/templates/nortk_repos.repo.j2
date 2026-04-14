@@ -1,0 +1,8 @@
+{% for repo in repo_name | zip(short_repo_name) %}
+[nortk_{{ repo.1 }}]
+name={{ repo.0 }}
+baseurl=http://{{ repo_fqdn }}/{{ repo.1 }}/
+enabled=1
+gpgcheck=0
+
+{% endfor %}
