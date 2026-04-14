@@ -15,20 +15,22 @@
 
     - name: Create repository directory structure
       ansible.builtin.file:
-        path: "{{ full_repo_path }}"
+        path: "{{ repo_base }}/{{ item }}"
         state: directory
         mode: '0755'
         owner: nginx
         group: nginx
+      loop: "{{ short_repo_name }}"
 
     - name: Initialize the repository with createrepo_c
       ansible.builtin.command:
-        cmd: "createrepo_c {{ full_repo_path }}"
-        creates: "{{ full_repo_path }}/repodata"
+        cmd: "createrepo_c {{ repo_base }}/{{ item }}"
+        creates: "{{ repo_base }}/{{ item }}/repodata"
+      loop: "{{ short_repo_name }}"
 
     - name: Configure Nginx to serve the repository
       ansible.builtin.copy:
-        dest: "/etc/nginx/conf.d/nortk_{{ short_repo_name }}.conf"
+        dest: "/etc/nginx/conf.d/nortk_repos.conf"
         content: |
           server {
               listen 80;
@@ -64,14 +66,14 @@
         enabled: true
         state: started
 
+    - name: Generate update script
+      ansible.builtin.template:
+        src: templates/update_repos.sh.j2
+        dest: "{{ repo_base }}/update_repos.sh"
+        mode: '0755'
+
     - name: Create the Nortk ERP release package
       ansible.builtin.include_tasks: create_repo_rpm.yaml
-
-    - name: Deploy the update_repos.sh script
-      ansible.builtin.template:
-        src: files/update_repos.sh
-        dest: "{{ repo_base }}"
-        mode: '0755'
 
   handlers:
     - name: Restart nginx
