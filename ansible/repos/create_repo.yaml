@@ -1,5 +1,5 @@
 ---
-- name: Create and configure local RPM repository for Nortk
+- name: Create and configure local RPM repository for Linux Enterprise by NorTK
   hosts: all
   vars_files: vars/main.yaml
 
@@ -30,7 +30,7 @@
 
     - name: Configure Nginx to serve the repository
       ansible.builtin.copy:
-        dest: "/etc/nginx/conf.d/nortk_repos.conf"
+        dest: "/etc/nginx/conf.d/len_repos.conf"
         content: |
           server {
               listen 80;
@@ -72,7 +72,7 @@
         dest: "{{ repo_base }}/update_repos.sh"
         mode: '0755'
 
-    - name: Create the Nortk ERP release package
+    - name: Create the Linux Enterprise release packages
       ansible.builtin.include_tasks: create_repo_rpm.yaml
 
   handlers:
