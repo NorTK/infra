@@ -15,18 +15,18 @@
 
     - name: Create repository directory structure
       ansible.builtin.file:
-        path: "{{ repo_base }}/{{ item }}"
+        path: "{{ repo_base }}/{{ item.short_name }}"
         state: directory
         mode: '0755'
         owner: nginx
         group: nginx
-      loop: "{{ short_repo_name }}"
+      loop: "{{ repositories }}"
 
     - name: Initialize the repository with createrepo_c
       ansible.builtin.command:
-        cmd: "createrepo_c {{ repo_base }}/{{ item }}"
-        creates: "{{ repo_base }}/{{ item }}/repodata"
-      loop: "{{ short_repo_name }}"
+        cmd: "createrepo_c {{ repo_base }}/{{ item.short_name }}"
+        creates: "{{ repo_base }}/{{ item.short_name }}/repodata"
+      loop: "{{ repositories }}"
 
     - name: Configure Nginx to serve the repository
       ansible.builtin.copy:
