@@ -1,5 +1,5 @@
 Name:           nortk-erp-release
-Version:        1.0
+Version:        {{ repo_version }}
 Release:        1
 Summary:        Nortk ERP Repository Configuration
 BuildArch:      noarch
