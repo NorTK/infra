@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASE_PATH=$(pwd)
-REPOS=({% for repo in short_repo_name %}"{{ repo }}" {% endfor %})
+REPOS=({% for repo in repositories %}"{{ repo.short_name }}" {% endfor %})
 
 for repo in "${REPOS[@]}"; do
     echo "Updating repo: ${BASE_PATH}/${repo}"
