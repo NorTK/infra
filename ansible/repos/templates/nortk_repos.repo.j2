@@ -1,7 +1,7 @@
-{% for repo in repo_name | zip(short_repo_name) %}
-[nortk_{{ repo.1 }}]
-name={{ repo.0 }}
-baseurl=http://{{ repo_fqdn }}/{{ repo.1 }}/
+{% for repo in repositories %}
+[nortk_{{ repo.short_name }}]
+name={{ repo.name }}
+baseurl=http://{{ repo_fqdn }}/{{ repo.short_name }}/
 enabled=1
 gpgcheck=0
 
