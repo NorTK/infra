@@ -5,24 +5,32 @@
     state: directory
   loop: [SPECS, RPMS, SOURCES, BUILD, SRPMS]
 
-- name: Deploy the nortk-erp-release spec file
-  ansible.builtin.template:
-    src: files/nortk-erp-release.spec
-    dest: ~/rpmbuild/SPECS/nortk-erp-release.spec
-    mode: '0644'
+- name: Build repository release packages
+  block:
+    - name: Deploy the spec files
+      ansible.builtin.template:
+        src: "files/nortk-{{ item.1 }}-release.spec"
+        dest: "~/rpmbuild/SPECS/nortk-{{ item.1 }}-release.spec"
+        mode: '0644'
+      vars:
+        repo_version: "{{ item.2 }}"
+      loop: "{{ repo_name | zip(short_repo_name, repo_version) | list }}"
 
-- name: Build the nortk-erp repository RPM package
-  ansible.builtin.command:
-    cmd: "rpmbuild -bb ~/rpmbuild/SPECS/nortk-erp-release.spec"
-    creates: "~/rpmbuild/RPMS/noarch/nortk-erp-release-1.0-1.noarch.rpm"
+    - name: Build the RPM packages
+      ansible.builtin.command:
+        cmd: "rpmbuild -bb ~/rpmbuild/SPECS/nortk-{{ item.1 }}-release.spec"
+        creates: "~/rpmbuild/RPMS/noarch/nortk-{{ item.1 }}-release-{{ item.2 }}-1.noarch.rpm"
+      loop: "{{ repo_name | zip(short_repo_name, repo_version) | list }}"
 
-- name: Copy the built RPM to the repository
-  ansible.builtin.copy:
-    src: "~/rpmbuild/RPMS/noarch/nortk-erp-release-1.0-1.noarch.rpm"
-    dest: "{{ full_repo_path }}/"
-    remote_src: yes
-    mode: '0644'
+    - name: Copy the built RPMs to the repositories
+      ansible.builtin.copy:
+        src: "~/rpmbuild/RPMS/noarch/nortk-{{ item.1 }}-release-{{ item.2 }}-1.noarch.rpm"
+        dest: "{{ repo_base }}/{{ item.1 }}/"
+        remote_src: yes
+        mode: '0644'
+      loop: "{{ repo_name | zip(short_repo_name, repo_version) | list }}"
 
-- name: Update repository metadata
-  ansible.builtin.command:
-    cmd: "createrepo_c --update {{ full_repo_path }}"
+    - name: Update repository metadata
+      ansible.builtin.command:
+        cmd: "createrepo_c --update {{ repo_base }}/{{ item.1 }}"
+      loop: "{{ repo_name | zip(short_repo_name, repo_version) | list }}"
