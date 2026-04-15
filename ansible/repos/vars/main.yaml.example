@@ -6,10 +6,10 @@ repo_fqdn: "repos.nortk.com"
 repositories:
   - name: "Linux Enterprise by NorTK OS Repository"
     short_name: "os"
-    version: "1.0"
+    version: "0.1"
   - name: "Linux Enterprise by NorTK ERP Repository"
     short_name: "erp"
-    version: "1.1"
+    version: "0.1"
 
 # The full_repo_path is now derived from repo_base and item.short_name
 # in the tasks.
