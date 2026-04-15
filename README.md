@@ -27,6 +27,33 @@ This project includes an Ansible playbook to automate the creation and configura
     ansible-playbook -i ansible/repos/inventory ansible/repos/create_repo.yaml
     ```
 
+### Adding a New Repository
+
+To add a new repository (e.g., `updates` version `0.1`), follow these steps:
+
+1.  **Define the Repository:**
+    Add a new entry to the `repositories` list in `ansible/repos/vars/main.yaml`:
+    ```yaml
+    repositories:
+      # ... existing repositories ...
+      - name: "Linux Enterprise by NorTK Updates Repository"
+        short_name: "updates"
+        version: "0.1"
+    ```
+
+2.  **Create a Spec File:**
+    Create a new spec file in `ansible/repos/files/len-updates-release.spec`. You can use an existing one as a template:
+    ```bash
+    cp ansible/repos/files/len-os-release.spec ansible/repos/files/len-updates-release.spec
+    ```
+    Update the content of the new spec file to match the `name` and `short_name` of the new repository.
+
+3.  **Run the Playbook:**
+    Re-run the playbook to create the new directory structure, build the new release package, and update the server configuration:
+    ```bash
+    ansible-playbook -i ansible/repos/inventory ansible/repos/create_repo.yaml
+    ```
+
 ### What the Playbook Does
 
 - **Infrastructure:** Installs Nginx, `createrepo_c`, and `rpm-build`.
