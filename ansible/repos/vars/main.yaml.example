@@ -4,10 +4,10 @@ repo_base: "/usr/share/nginx/html/repos"
 repo_fqdn: "repos.nortk.com"
 
 repositories:
-  - name: "Linux Enterprise OS Repository by NorTK"
+  - name: "Linux Enterprise by NorTK OS Repository"
     short_name: "os"
     version: "1.0"
-  - name: "Linux Enterprise ERP Repository by NorTK"
+  - name: "Linux Enterprise by NorTK ERP Repository"
     short_name: "erp"
     version: "1.1"
 
