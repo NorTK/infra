@@ -6,9 +6,11 @@ repo_filename: len_repos.conf
 
 repositories:
   - name: "Linux Enterprise by NorTK OS Repository"
+    distro_name: "len"
     short_name: "os"
     version: "0.1"
   - name: "Linux Enterprise by NorTK ERP Repository"
+    distro_name: "len"
     short_name: "erp"
     version: "0.1"
 

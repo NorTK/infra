@@ -9,7 +9,7 @@
   block:
     - name: Deploy the spec files
       ansible.builtin.template:
-        src: "files/len-{{ item.short_name }}-release.spec"
+        src: "files/{{ distro_name }}-{{ item.short_name }}-release.spec"
         dest: "~/rpmbuild/SPECS/len-{{ item.short_name }}-release.spec"
         mode: '0644'
       vars:
@@ -18,13 +18,13 @@
 
     - name: Build the RPM packages
       ansible.builtin.command:
-        cmd: "rpmbuild -bb ~/rpmbuild/SPECS/len-{{ item.short_name }}-release.spec"
-        creates: "~/rpmbuild/RPMS/noarch/len-{{ item.short_name }}-release-{{ item.version }}-1.noarch.rpm"
+        cmd: "rpmbuild -bb ~/rpmbuild/SPECS/{{ distro_name }}-{{ item.short_name }}-release.spec"
+        creates: "~/rpmbuild/RPMS/noarch/{{ distro_name }}-{{ item.short_name }}-release-{{ item.version }}-1.noarch.rpm"
       loop: "{{ repositories }}"
 
     - name: Copy the built RPMs to the repositories
       ansible.builtin.copy:
-        src: "~/rpmbuild/RPMS/noarch/len-{{ item.short_name }}-release-{{ item.version }}-1.noarch.rpm"
+        src: "~/rpmbuild/RPMS/noarch/{{ distro_name }}-{{ item.short_name }}-release-{{ item.version }}-1.noarch.rpm"
         dest: "{{ repo_base }}/{{ item.short_name }}/"
         remote_src: yes
         mode: '0644'
