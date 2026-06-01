@@ -2,6 +2,7 @@
 
 repo_base: "/usr/share/nginx/html/repos"
 repo_fqdn: "repos.nortk.com"
+repo_filename: len_repos.conf
 
 repositories:
   - name: "Linux Enterprise by NorTK OS Repository"

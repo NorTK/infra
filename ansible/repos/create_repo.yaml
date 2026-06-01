@@ -30,7 +30,7 @@
 
     - name: Configure Nginx to serve the repository
       ansible.builtin.copy:
-        dest: "/etc/nginx/conf.d/len_repos.conf"
+        dest: "/etc/nginx/conf.d/{{ repo_filename }}"
         content: |
           server {
               listen 80;
