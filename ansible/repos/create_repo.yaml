@@ -1,7 +1,7 @@
 ---
 - name: Create and configure local RPM repository for Linux Enterprise by NorTK
   hosts: all
-  vars_files: vars/main.yaml
+  vars_files: vars/main-tacos.yaml
 
   tasks:
     - name: Install required tools (dnf, createrepo_c, nginx, rpm-build)
