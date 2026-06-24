@@ -4,33 +4,44 @@
     path: "~/rpmbuild/{{ item }}"
     state: directory
   loop: [SPECS, RPMS, SOURCES, BUILD, SRPMS]
+  tags: [rpm_creation]
 
 - name: Build repository release packages
+  tags: [rpm_creation]
   block:
     - name: Deploy the spec files
       ansible.builtin.template:
-        src: "files/{{ distro_name }}-{{ item.short_name }}-release.spec"
-        dest: "~/rpmbuild/SPECS/len-{{ item.short_name }}-release.spec"
+        src: "files/{{ spec_filename }}"
+        dest: "~/rpmbuild/SPECS/{{ spec_filename }}"
         mode: '0644'
-      vars:
-        repo_version: "{{ item.version }}"
-      loop: "{{ repositories }}"
 
     - name: Build the RPM packages
       ansible.builtin.command:
-        cmd: "rpmbuild -bb ~/rpmbuild/SPECS/{{ distro_name }}-{{ item.short_name }}-release.spec"
-        creates: "~/rpmbuild/RPMS/noarch/{{ distro_name }}-{{ item.short_name }}-release-{{ item.version }}-1.noarch.rpm"
-      loop: "{{ repositories }}"
+        cmd: "rpmbuild -ba ~/rpmbuild/SPECS/{{ spec_filename }}"
+        creates: "~/rpmbuild/RPMS/noarch/{{ distro_name }}-{{ spec_short_name }}-{{ spec_major_version }}.{{ spec_minor_version }}-{{ spec_release_version }}.noarch.rpm"
 
     - name: Copy the built RPMs to the repositories
       ansible.builtin.copy:
-        src: "~/rpmbuild/RPMS/noarch/{{ distro_name }}-{{ item.short_name }}-release-{{ item.version }}-1.noarch.rpm"
-        dest: "{{ repo_base }}/{{ item.short_name }}/"
+        src: "~/rpmbuild/RPMS/noarch/{{ distro_name }}-{{ spec_short_name }}-{{ spec_major_version }}.{{ spec_minor_version }}-{{ spec_release_version }}.el10.noarch.rpm"
+        dest: "{{ repo_base }}/{{ spec_major_version }}/{{ item.path }}/"
+        remote_src: yes
+        mode: '0644'
+      loop: "{{ repositories }}"
+
+    - name: Copy the built SRPMs to the repositories
+      ansible.builtin.copy:
+        src: "~/rpmbuild/SRPMS/{{ distro_name }}-{{ spec_short_name }}-{{ spec_major_version }}.{{ spec_minor_version }}-{{ spec_release_version }}.el10.src.rpm"
+        dest: "{{ repo_base }}/{{ spec_major_version }}/{{ item.sources.path }}/"
         remote_src: yes
         mode: '0644'
       loop: "{{ repositories }}"
 
     - name: Update repository metadata
       ansible.builtin.command:
-        cmd: "createrepo_c --update {{ repo_base }}/{{ item.short_name }}"
+        cmd: "createrepo_c --update {{ repo_base }}/{{ spec_major_version }}/{{ item.path }}"
+      loop: "{{ repositories }}"
+
+    - name: Update source repository metadata
+      ansible.builtin.command:
+        cmd: "createrepo_c --update {{ repo_base }}/{{ spec_major_version }}/{{ item.sources.path }}"
       loop: "{{ repositories }}"
