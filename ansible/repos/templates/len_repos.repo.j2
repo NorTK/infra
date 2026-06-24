@@ -1,7 +1,7 @@
 {% for repo in repositories %}
 [len_{{ repo.short_name }}]
 name={{ repo.name }}
-baseurl=http://{{ repo_fqdn }}/{{ repo.short_name }}/
+baseurl=http://{{ repo_fqdn }}/{{ spec_major_version }}/{{ repo.short_name }}/
 enabled=1
 gpgcheck=0
 
