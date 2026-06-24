@@ -1,8 +1,10 @@
 #!/bin/bash
 
 BASE_PATH=$(pwd)
-REPOS=({% for repo in repositories %}"{{ repo.short_name }}" {% endfor %})
 
+echo "Updating RPM and SRPM repos"
+
+REPOS=({% for repo in repositories %}"{{repo.path}} {{ repo.sources.path }} " {% endfor %})
 for repo in "${REPOS[@]}"; do
     echo "Updating repo: ${BASE_PATH}/${repo}"
     createrepo_c --update ${BASE_PATH}/${repo}
