@@ -1,17 +1,24 @@
 ---
-
-repo_base: "/usr/share/nginx/html/repos"
-repo_fqdn: "repos.nortk.com"
-repo_filename: len_repos.conf
-distro_name: "len"
+# Change these variables to fit you repo
+repo_base: "/srv/tacos_repos"
+repo_fqdn: "repos.tacos.org.mx"
+repo_filename: "tacos_repos.conf"
+distro_name: "tacos"
+spec_filename: "tacos-repo.spec"
+spec_major_version: "10"
+spec_minor_version: "1"
+spec_release_version: "1"
+spec_short_name: "repo"
 
 repositories:
-  - name: "Linux Enterprise by NorTK OS Repository"
-    short_name: "os"
-    version: "0.1"
-  - name: "Linux Enterprise by NorTK ERP Repository"
-    short_name: "erp"
-    version: "0.1"
+  - name: "TacOS Repository"
+    short_name: "BaseOS"
+    path: "BaseOS/x86_64/os"
+    version: "10"
+    sources:
+      name: "TacOS Source Repository"
+      short_name: "source"
+      path: "BaseOS/source/tree"
 
 # The full_repo_path is now derived from repo_base and item.short_name
 # in the tasks.
