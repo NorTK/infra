@@ -13,19 +13,34 @@
           - rpm-build
         state: present
 
-    - name: Create repository directory structure
+    - name: Create RPM repositories directories
       ansible.builtin.file:
-        path: "{{ repo_base }}/{{ item.short_name }}"
+        path: "{{ repo_base }}/{{ spec_major_version }}/{{ item.path }}"
         state: directory
         mode: '0755'
         owner: nginx
         group: nginx
       loop: "{{ repositories }}"
 
-    - name: Initialize the repository with createrepo_c
+    - name: Create SRPM repositories directories
+      ansible.builtin.file:
+        path: "{{ repo_base }}/{{ spec_major_version }}/{{ item.sources.path }}"
+        state: directory
+        mode: '0755'
+        owner: nginx
+        group: nginx
+      loop: "{{ repositories }}"
+
+    - name: Initialize the RPM repositories with createrepo_c
       ansible.builtin.command:
-        cmd: "createrepo_c {{ repo_base }}/{{ item.short_name }}"
-        creates: "{{ repo_base }}/{{ item.short_name }}/repodata"
+        cmd: "createrepo_c {{ repo_base }}/{{ spec_major_version }}/{{ item.path }}"
+        creates: "{{ repo_base }}/{{ spec_major_version }}/{{ item.path }}/repodata"
+      loop: "{{ repositories }}"
+
+    - name: Initialize the SRPM repositories with createrepo_c
+      ansible.builtin.command:
+        cmd: "createrepo_c {{ repo_base }}/{{ spec_major_version }}/{{ item.sources.path }}"
+        creates: "{{ repo_base }}/{{ spec_major_version }}/{{ item.sources.path }}/repodata"
       loop: "{{ repositories }}"
 
     - name: Configure Nginx to serve the repository
@@ -69,11 +84,12 @@
     - name: Generate update script
       ansible.builtin.template:
         src: templates/update_repos.sh.j2
-        dest: "{{ repo_base }}/update_repos.sh"
+        dest: "{{ repo_base }}/{{ spec_major_version }}/update_repos.sh"
         mode: '0755'
 
-    - name: Create the Linux Enterprise release packages
+    - name: Create repo packages
       ansible.builtin.include_tasks: create_repo_rpm.yaml
+      tags: [rpm_creation]
 
   handlers:
     - name: Restart nginx
